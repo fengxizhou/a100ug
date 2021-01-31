@@ -12,9 +12,12 @@ On Palmetto, the DGX A100 nodes are integrated into the PBS resource and workloa
 
 1. Request a DGX A100 node in the interactive mode
 
-   `qsub -I -l select=1:ncpus=20:mem=20gb:ngpus=1:gpu_model=p100:interconnect=10ge,walltime=5:00:00`
+   `qsub -I -l select=1:ncpus=20:mem=20gb:ngpus=1:gpu_model=p100,walltime=1:00:00 -q dgxtest` 
    
 1. Request a DGX A100 node in the batch mode
-   `qsub -I -l select=1:ncpus=20:mem=20gb:ngpus=1:gpu_model=p100:interconnect=10ge,walltime=5:00:00`
+
+   `qsub mydgx100.pbs`
+   
+ 
 
   
