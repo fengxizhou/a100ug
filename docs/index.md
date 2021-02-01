@@ -10,11 +10,11 @@ NVIDIA DGX A100 is a computer system built on NVIDIA A100 GPUs for AI workload. 
 
 On Palmetto, the DGX A100 nodes are integrated into the PBS resource and workload manager. An authorized user should request a DGX A100 Node using a `qsub` command in one the following ways:
 
-1. Request a DGX A100 node in the interactive mode
++ Request a DGX A100 node in the interactive mode
 
    `qsub -I -l select=1:ncpus=256:mem=900gb:ngpus=8:gpu_model=a100,walltime=1:00:00 -q dgxtest` 
    
-1. Request a DGX A100 node in the batch mode
++ Request a DGX A100 node in the batch mode
 
    `qsub dgx_test.pbs`
 
@@ -72,6 +72,7 @@ singularity build tensorflow.sif tensorflow_20.08-tf1-py3.sif
 ```
 
 +  Interact with a singularity container
+
 ```
 # first, pull or build an image
 singularity build lolcow.sif docker://godlovedc/lolcow
@@ -82,6 +83,7 @@ singularity shell lolcow.sif
 ```
 
 + Run a command within a singularity container
+
 ```
 # run command within a container
 # here cowsay is the program and moo is an argument
@@ -93,6 +95,7 @@ singularity exec lolcow.sif cowsay moo
 A container can have a runscript that is executed when the container is run. See singularity
 definition file at https://sylabs.io/guides/3.7/user-guide/definition_files.html for how 
 the runscript is defined.
+
 ```
 singularity run lolcow.sif
 ```
@@ -127,7 +130,7 @@ system-defined bind paths and user-defined bind paths.
    For example, the following command binds the /scratch2 directory 
   on the host system into the /mnt directory in the container:
   
-  ```singularity exec --bind /data:/mnt my_container.sif ls /mnt```
+  ```singularity exec --bind /scratch2:/mnt my_container.sif ls /mnt```
  
 ###  Use NVIDIA GPU inside a singularity container
 
@@ -136,6 +139,7 @@ which will setup the container’s environment to use an NVIDIA GPU
 and the basic CUDA libraries to run a CUDA enabled application.
 
 The --nv flag will:
+
 + Ensure that the /dev/nvidiaX device entries are available
   inside the container, so that the GPU cards in the host are accessible.
 
@@ -147,36 +151,47 @@ The --nv flag will:
 
 ## Example of running a tensorflow program using a singularity container
 
-1. Change into a scratch space
-   ```
-   mkdir -p /local_scratch/$USER
-   cd /local_scratch/$USER
-   ```
-1. Build or pull a tensorflow image
+Step 1. Change into a scratch space
+
+```
+mkdir -p /local_scratch/$USER
+cd /local_scratch/$USER
+```
+
+Step 2. Build or pull a tensorflow image
    
-    ```singularity pull docker://tensorflow/tensorflow:latest-gpu```
+```
+singularity pull docker://tensorflow/tensorflow:latest-gpu
+```
    
-1. Run the container with GPU support
+Step 3. Run the container with GPU support
 
-    ```singularity run --nv tensorflow_latest-gpu.sif```
+```
+singularity run --nv tensorflow_latest-gpu.sif
+```
 
-1. Execute a python script that verify the GPU is available
+Step 4. Execute a python script that verify the GPU is available
 
-   ```
-   Singularity> python
-   >>> from tensorflow.python.client import device_lib
-   >>> print(device_lib.list_local_devices())
-   >>> exit()
-   Singularity> exit
-   ```
-1. Write a python program that use the environment inside the container. Here, we use an 
+```
+Singularity> python
+>>> from tensorflow.python.client import device_lib
+>>> print(device_lib.list_local_devices())
+>>> exit()
+Singularity> exit
+```
+
+Step 5. Write a python program that use the environment inside the container. Here, we use an 
    existing one that perform image classification. 
-   ```
-   rsync -av /software/examples/dgxtest/fashion_mnist.py ~/
-   ```
-1. Run the program within the container
 
-   ```singularity exec --nv tensorflow_latest-gpu.sif python3 ~/fashion_mnist.py```
+```
+rsync -av /software/examples/dgxtest/fashion_mnist.py ~/
+```
+
+Step 6. Run the program within the container
+
+```
+singularity exec --nv tensorflow_latest-gpu.sif python3 ~/fashion_mnist.py
+```
 
 ## Example files
 
@@ -189,7 +204,7 @@ or
 
     qsub /software/examples/dgxtest/dgx_test.pbs
 
-1. dgx_test.pbs
++ dgx_test.pbs
 
 ```
 #!/bin/sh
@@ -244,7 +259,7 @@ rsync -av /software/examples/dgxtest/fashion_mnist.py /scratch2/$USER/mnist/
 singularity exec --nv --bind /scratch2/$USER/mnist:/mnt tensorflow_20.08-tf1-py3.sif python3 /mnt/fashion_mnist.py
 ```
 
-2. fashion_mnist.py
++ fashion_mnist.py
 
 ```
 import tensorflow as tf
